@@ -36,7 +36,7 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     AssociateFiles=1
 
 ARG 7ZIP_VERSION=1805
-
+SHELL ["powershell", "-Command"]
 RUN \
     Invoke-WebRequest \
         -Uri $('https://www.7-zip.org/a/7z' + $ENV:7ZIP_VERSION + '-x64.exe') \
