@@ -35,6 +35,22 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     Include_test=0 `
     AssociateFiles=1
 
+ARG 7ZIP_VERSION=1805
+
+RUN \
+    Invoke-WebRequest \
+        -Uri $('https://www.7-zip.org/a/7z' + $ENV:7ZIP_VERSION + '-x64.exe') \
+        -OutFile $('C:\TEMP\7z' + $ENV:7ZIP_VERSION + '-x64.exe') \
+        -UseBasicParsing \ 
+        -Verbose ; \
+    \
+    Start-Process \
+        -FilePath $('C:\TEMP\7z' + $ENV:7ZIP_VERSION + '-x64.exe') \
+        -ArgumentList '/S' \
+        -NoNewWindow \
+        -Wait \
+        -Verbose ; 
+
 #SHELL ["powershell"]
 
 # Restore the default Windows shell for correct batch processing.
