@@ -1,0 +1,34 @@
+name: Build Unreal Engine Images
+
+on:
+  push:
+    paths:
+      - ue-win.dockerfile
+      - ue-win-nano.dockerfile
+      - .github/workflows/build-unreal.yml
+      - build.ps1
+
+env: 
+  USER: ${{ secrets.DOCKER_USER }}
+  TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+
+jobs:
+  build-ue-win:
+    strategy:
+      matrix:
+        dockerfile: [ue-win-nano, ue-win]
+        include:
+          - dockerfile: ue-win-nano
+            tag: nano
+          
+          - dockerfile: ue-win
+            tag: latest
+
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build and push Nano Image
+        working-directory: .
+        run: ./build.ps1 -DockerFile "${{ matrix.dockerfile }}.dockerfile" -Repository "unreal" -Tag "${{ matrix.tag }}"
