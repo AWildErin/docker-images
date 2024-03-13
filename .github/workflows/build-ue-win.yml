@@ -1,0 +1,22 @@
+name: Build UE Windows
+
+on:
+  push:
+    paths:
+      - ue-win.dockerfile
+      - .github/workflows/build-ue-win.yml
+      - build.ps1
+
+env: 
+  USER: ${{ secrets.DOCKER_USER }}
+  TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+
+jobs:
+  build-ue-win:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@master
+      - name: Build and push windows image
+        working-directory: .
+        run: ./build.ps1 -DockerFile "ue-win.dockerfile" -Repository "unreal" -Tag "nanoserver"
