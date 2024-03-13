@@ -19,4 +19,4 @@ jobs:
       - uses: actions/checkout@master
       - name: Build and push windows image
         working-directory: .
-        run: ./build.ps1 -DockerFile "ue-win-nano.dockerfile" -Repository "unreal" -Tag "nanoserver"
+        run: ./build.ps1 -DockerFile "ue-win-nano.dockerfile" -Repository "unreal" -Tag "nano-latest"
