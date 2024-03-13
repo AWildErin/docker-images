@@ -35,8 +35,7 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     Include_test=0 `
     AssociateFiles=1
 
-ARG 7ZIP_VERSION=1805
-ADD 'https://www.7-zip.org/a/7z' + $ENV:7ZIP_VERSION + '-x64.exe' C:\TEMP\7zip-x64.exe
+ADD 'https://www.7-zip.org/a/7z2301-x64.exe' C:\TEMP\7zip-x64.exe
 RUN C:\TEMP\7zip-x64.exe
 COPY --from=download ["/Program Files/7-Zip", "/Program Files/7-Zip"]
 
