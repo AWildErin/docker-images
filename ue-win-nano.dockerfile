@@ -5,6 +5,9 @@ FROM mcr.microsoft.com/powershell:lts-nanoserver-ltsc2022 AS builder
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
 
+ADD https://aka.ms/vs/17/release/vc_redist.x64.exe C:\TEMP\vc_redist.x64.exe
+RUN C:\TEMP\vc_redist.x64.exe /quiet /install /norestart
+
 # Download the Build Tools bootstrapper.
 ADD https://aka.ms/vs/17/release/vs_buildtools.exe C:\TEMP\vs_buildtools.exe
 
@@ -17,8 +20,6 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 `
     --add Microsoft.Net.Component.4.8.SDK `
-    --remove Microsoft.VisualStudio.Component.VC.ATL `
-    --remove Microsoft.VisualStudio.Component.VC.ATLMFC `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 # Fetch latest python
