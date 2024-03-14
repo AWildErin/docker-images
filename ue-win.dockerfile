@@ -1,7 +1,8 @@
 # escape=`
 
-# Use the 2022 Windows Server Core Long Term Servicing Channel image
-FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS builder
+# We base from 4.8, this is servercoreltsc2022. We need it since we build C# projects too
+# and the 4.8 sdk we add doesn't work with cmake? I'm not sure, but I hope this works
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 AS builder
 
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
@@ -17,7 +18,7 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --add Microsoft.VisualStudio.Component.VC.Llvm.Clang `
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 `
-    --add Microsoft.Net.Component.4.7.2.SDK `
+    --add Microsoft.Net.Component.4.8.SDK `
     --remove Microsoft.VisualStudio.Component.VC.ATL `
     --remove Microsoft.VisualStudio.Component.VC.ATLMFC `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
