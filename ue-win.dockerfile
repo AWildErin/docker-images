@@ -36,14 +36,14 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     AssociateFiles=1
 
 ADD 'https://www.7-zip.org/a/7z2301-x64.exe' C:\TEMP\7zip-x64.exe
-RUN C:\TEMP\7zip-x64.exe
-COPY --from=download ["/Program Files/7-Zip", "/Program Files/7-Zip"]
+RUN C:\TEMP\7zip-x64.exe /S
+#COPY --from=download ["/Program Files/7-Zip", "/Program Files/7-Zip"]
 
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
 
 # Make sure our shell can find everything
-RUN setx PATH "%PATH%";%ProgramFiles%\7-Zip;c:\BuildTools\python;c:\BuildTools\python\scripts\ /M
+RUN setx /M PATH "%PATH%;%ProgramFiles%\\7-Zip;c:\\BuildTools\\python;c:\\BuildTools\\python\\scripts\\"
 
 # Define the entry point for the docker container.
 # This entry point starts the developer command prompt and launches the PowerShell shell.
