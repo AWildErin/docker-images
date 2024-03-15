@@ -13,14 +13,15 @@ ADD https://aka.ms/vs/17/release/vs_buildtools.exe C:\TEMP\vs_buildtools.exe
 RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --installPath C:\BuildTools `
     --add Microsoft.VisualStudio.Workload.VCTools `
+    --add Microsoft.VisualStudio.Component.VC.ATL `
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
+    --add Microsoft.VisualStudio.Component.VC.CLI.Support `
     --add Microsoft.VisualStudio.Component.VC.CMake.Project `
     --add Microsoft.VisualStudio.Component.VC.Llvm.Clang `
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 `
     --add Microsoft.Net.Component.4.8.SDK `
     --add Microsoft.Net.Component.4.7.2.TargetingPack `
-    --remove Microsoft.VisualStudio.Component.VC.ATL `
-    --remove Microsoft.VisualStudio.Component.VC.ATLMFC `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 # Fetch latest python
