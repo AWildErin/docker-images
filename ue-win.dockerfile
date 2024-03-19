@@ -17,7 +17,6 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --add Microsoft.VisualStudio.Component.VC.ATLMFC `
     --add Microsoft.VisualStudio.Component.VC.CLI.Support `
     --add Microsoft.VisualStudio.Component.VC.CMake.Project `
-    --add Microsoft.VisualStudio.Component.VC.Llvm.Clang `
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 `
     --add Microsoft.Net.Component.4.8.SDK `
@@ -40,6 +39,20 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
 ADD 'https://www.7-zip.org/a/7z2301-x64.exe' C:\TEMP\7zip-x64.exe
 RUN C:\TEMP\7zip-x64.exe /S
 #COPY --from=download ["/Program Files/7-Zip", "/Program Files/7-Zip"]
+
+# Install DirectX Redist
+# Taken from https://github.com/EpicGames/UnrealEngine/blob/072300df18a94f18077ca20a14224b5d99fee872/Engine/Extras/Containers/Dockerfiles/windows/runtime/Dockerfile#L28
+RUN mkdir C:\TEMP\DirectX\DLLs\
+ADD https://download.microsoft.com/download/8/4/A/84A35BF1-DAFE-4AE8-82AF-AD2AE20B6B14/directx_Jun2010_redist.exe C:\TEMP\directx_redist.exe
+RUN start /wait C:\TEMP\directx_redist.exe /Q /T:C:\TEMP\DirectX && `
+    expand C:\TEMP\DirectX\APR2007_xinput_x64.cab -F:xinput1_3.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Jun2010_D3DCompiler_43_x64.cab -F:D3DCompiler_43.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Feb2010_X3DAudio_x64.cab -F:X3DAudio1_7.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Jun2010_XAudio_x64.cab -F:XAPOFX1_5.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Jun2010_XAudio_x64.cab -F:XAudio2_7.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Jun2010_d3dx9_43_x86.cab -F:d3dx9_43.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Jun2010_d3dx11_43_x64.cab -F:d3dx11_43.dll C:\TEMP\DirectX\DLLs\ && `
+    move C:\TEMP\DirectX\DLLs\* C:\Windows\System32\
 
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
