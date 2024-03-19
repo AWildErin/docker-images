@@ -9,6 +9,10 @@ SHELL ["cmd", "/S", "/C"]
 # Download the Build Tools bootstrapper.
 ADD https://aka.ms/vs/17/release/vs_buildtools.exe C:\TEMP\vs_buildtools.exe
 
+# Install VC++ Redistributables
+ADD https://aka.ms/vs/16/release/vc_redist.x64.exe C:\TEMP\vc_redist.x64.exe
+RUN C:\TEMP\vc_redist.x64.exe /install /passive /norestart
+
 # Install Build Tools
 RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --installPath C:\BuildTools `
