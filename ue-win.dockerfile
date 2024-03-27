@@ -53,7 +53,7 @@ RUN start /wait C:\TEMP\directx_redist.exe /Q /T:C:\TEMP\DirectX && `
     expand C:\TEMP\DirectX\Feb2010_X3DAudio_x64.cab -F:X3DAudio1_7.dll C:\TEMP\DirectX\DLLs\ && `
     expand C:\TEMP\DirectX\Jun2010_XAudio_x64.cab -F:XAPOFX1_5.dll C:\TEMP\DirectX\DLLs\ && `
     expand C:\TEMP\DirectX\Jun2010_XAudio_x64.cab -F:XAudio2_7.dll C:\TEMP\DirectX\DLLs\ && `
-    expand C:\TEMP\DirectX\Jun2010_d3dx9_43_x86.cab -F:d3dx9_43.dll C:\TEMP\DirectX\DLLs\ && `
+    expand C:\TEMP\DirectX\Jun2010_d3dx9_43_x64.cab -F:d3dx9_43.dll C:\TEMP\DirectX\DLLs\ && `
     expand C:\TEMP\DirectX\Jun2010_d3dx11_43_x64.cab -F:d3dx11_43.dll C:\TEMP\DirectX\DLLs\ && `
     move C:\TEMP\DirectX\DLLs\* C:\Windows\System32\
 
