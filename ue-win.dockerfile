@@ -1,7 +1,6 @@
 # escape=`
 
-# Use the 2022 Windows Server Core Long Term Servicing Channel image
-FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS builder
+FROM mcr.microsoft.com/windows/server:ltsc2022 AS builder
 
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
