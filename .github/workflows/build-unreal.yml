@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - ue-win.dockerfile
-      - ue-win-nano.dockerfile
       - .github/workflows/build-unreal.yml
       - build.ps1
 
@@ -18,12 +17,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        #dockerfile: [ue-win-nano, ue-win]
         dockerfile: [ue-win]
         include:
-          #- dockerfile: ue-win-nano
-          #  tag: nano
-          
           - dockerfile: ue-win
             tag: latest
 
