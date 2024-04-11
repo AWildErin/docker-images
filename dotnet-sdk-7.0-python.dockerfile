@@ -1,0 +1,80 @@
+#
+# This file was adapted from
+# https://github.com/rkttu/python-nanoserver/blob/master/Dockerfile
+#
+
+ARG DOTNET_VERSION=7.0
+ARG WINDOWS_VERSION=ltsc2022
+FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION-windowsservercore-$WINDOWS_VERSION as servercore
+
+# Python Config
+ARG PYTHON_VERSION=3.12.3
+ARG PYTHON_RELEASE=3.12.3
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ARG PYTHON_PIP_VERSION=24.0
+# https://github.com/pypa/get-pip
+ARG PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/dbf0c85f76fb6e1ab42aa672ffca6f0a675d9ee4/public/get-pip.py
+
+USER ContainerAdministrator
+
+WORKDIR C:\\Temp
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
+
+RUN [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; \
+    Invoke-WebRequest -UseBasicParsing -Uri "https://www.python.org/ftp/python/$env:PYTHON_RELEASE/python-$env:PYTHON_VERSION-embed-amd64.zip" -Out 'Python.zip'; \
+    Expand-Archive -Path "Python.zip"; \
+    Invoke-WebRequest -UseBasicParsing -Uri "$env:PYTHON_GET_PIP_URL" -OutFile 'Python\get-pip.py'; \
+    [String]::Format('@set PYTHON_PIP_VERSION={0}', $env:PYTHON_PIP_VERSION) | Out-File -FilePath 'Python\pipver.cmd' -Encoding ASCII;
+
+RUN $FileVer = [System.Version]::Parse([System.Diagnostics.FileVersionInfo]::GetVersionInfo('Python\python.exe').ProductVersion); \
+    $Postfix = $FileVer.Major.ToString() + $FileVer.Minor.ToString(); \
+    Remove-Item -Path "Python\python$Postfix._pth"; \
+    Expand-Archive -Path "Python\python$Postfix.zip" -Destination "Python\Lib"; \
+    Remove-Item -Path "Python\python$Postfix.zip"; \
+    New-Item -Type Directory -Path "Python\DLLs";
+
+FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION-nanoserver-$WINDOWS_VERSION
+COPY --from=0 C:\\Temp\\Python C:\\Python
+
+USER ContainerAdministrator
+
+ENV PYTHONPATH C:\\Python;C:\\Python\\Scripts;C:\\Python\\DLLs;C:\\Python\\Lib;C:\\Python\\Lib\\plat-win;C:\\Python\\Lib\\site-packages
+RUN setx.exe /m PATH "%PATH%;%PYTHONPATH%" && \
+    setx.exe /m PYTHONPATH %PYTHONPATH% && \
+    setx.exe /m PIP_CACHE_DIR C:\Users\ContainerUser\AppData\Local\pip\Cache && \
+    reg.exe ADD HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t REG_DWORD /d 1 /f
+
+# https://soooprmx.com/archives/6471
+RUN assoc .py=Python.File && \
+    assoc .pyc=Python.CompiledFile && \
+    assoc .pyd=Python.Extension && \
+    assoc .pyo=Python.CompiledFile && \
+    assoc .pyw=Python.NoConFile && \
+    assoc .pyz=Python.ArchiveFile && \
+    assoc .pyzw=Python.NoConArchiveFile && \
+    ftype Python.ArchiveFile="C:\Python\python.exe" "%1" %* && \
+    ftype Python.CompiledFile="C:\Python\python.exe" "%1" %* && \
+    ftype Python.File="C:\Python\python.exe" "%1" %* && \
+    ftype Python.NoConArchiveFile="C:\Python\pythonw.exe" "%1" %* && \
+    ftype Python.NoConFile="C:\Python\pythonw.exe" "%1" %*
+
+RUN call C:\Python\pipver.cmd && \
+    %COMSPEC% /s /c "echo Installing pip==%PYTHON_PIP_VERSION% ..." && \
+    %COMSPEC% /s /c "C:\Python\python.exe C:\Python\get-pip.py --disable-pip-version-check --no-cache-dir pip==%PYTHON_PIP_VERSION%" && \
+    echo Removing ... && \
+    del /f /q C:\Python\get-pip.py C:\Python\pipver.cmd && \
+    echo Verifying install ... && \
+    echo   python --version && \
+    python --version && \
+    echo Verifying pip install ... && \
+    echo   pip --version && \
+    pip --version && \
+    echo Complete.
+
+RUN pip install virtualenv
+
+USER ContainerUser
+
+# Ideally I'd want this as an entrypoint but our GitLab runner doesn't like us doing this
+# so we have pwsh set directly in the config instead.
+#ENTRYPOINT ["pwsh.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]

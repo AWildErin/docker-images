@@ -1,0 +1,31 @@
+name: Build .NET Images
+
+on:
+  push:
+    paths:
+      - dotnet-*.dockerfile
+      - .github/workflows/build-dotnet.yml
+      - build.ps1
+
+env: 
+  USER: ${{ secrets.DOCKER_USER }}
+  TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+
+jobs:
+  build-dotnet:
+    strategy:
+      fail-fast: true
+      matrix:
+        dockerfile: [dotnet-sdk-7.0-python]
+        include:
+          - dockerfile: dotnet-sdk-7.0-python
+            tag: sdk-7.0-python
+
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build and push image
+        working-directory: .
+        run: ./build.ps1 -DockerFile "${{ matrix.dockerfile }}.dockerfile" -Repository "dotnet" -Tag "${{ matrix.tag }}"
