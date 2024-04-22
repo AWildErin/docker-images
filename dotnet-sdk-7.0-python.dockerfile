@@ -73,8 +73,11 @@ RUN call C:\Python\pipver.cmd && \
 
 RUN pip install virtualenv
 
+# Our runner uses powershell as the shell, but we don't come with that.
+# so we will alias just to make it all happy. There shouldn't be any major issues with this.
+# Realistically this is all stupid but I can't figure out a decent way to do this at all 😭
+RUN mklink "C:\Program Files\powershell\powershell.exe" "C:\Program Files\powershell\pwsh.exe"
+
 USER ContainerUser
 
-# Ideally I'd want this as an entrypoint but our GitLab runner doesn't like us doing this
-# so we have pwsh set directly in the config instead.
 #ENTRYPOINT ["pwsh.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
