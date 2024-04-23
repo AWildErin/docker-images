@@ -1,0 +1,23 @@
+name: Build Windows Docker images
+
+on:
+  push:
+    paths:
+      - docker_windows.dockerfile
+      - .github/workflows/build-windows.yml
+      - build_docker-windows.ps1
+
+env: 
+  USER: ${{ secrets.DOCKER_USER }}
+  TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+
+jobs:
+  build-windows-docker:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build and push image
+        working-directory: .
+        run: ./build_windows-docker.ps1
