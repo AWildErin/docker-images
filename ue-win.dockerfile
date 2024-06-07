@@ -57,11 +57,30 @@ RUN start /wait C:\TEMP\directx_redist.exe /Q /T:C:\TEMP\DirectX && `
     expand C:\TEMP\DirectX\Jun2010_d3dx11_43_x64.cab -F:d3dx11_43.dll C:\TEMP\DirectX\DLLs\ && `
     move C:\TEMP\DirectX\DLLs\* C:\Windows\System32\
 
+# Make sure our shell can find everything
+# These files do not have to exist right now, such as SteamCMD
+RUN setx /M PATH "%PATH%;%ProgramFiles%\\7-Zip;c:\\BuildTools\\python;c:\\BuildTools\\python\\scripts\\;c:\\steamcmd\\"
+
+# Download and unpack SteamCMD archive
+RUN mkdir c:\steamcmd
+ADD http://media.steampowered.com/installer/steamcmd.zip c:\steamcmd\steamcmd.zip
+RUN 7z x c:\steamcmd\steamcmd.zip -oc:\steamcmd
+
+# Set alternative shell
+# The next line works with powershell, but not cmd
+SHELL ["powershell"]
+
+# Update SteamCMD
+RUN c:\steamcmd\steamcmd.exe +quit; exit 0
+
+# Download SteamCMD-2FA
+ADD https://github.com/awilderin/steamcmd-2fa/releases/latest/download/steamcmd-2fa.exe C:\steamcmd\steamcmd-2fa.exe
+
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
 
-# Make sure our shell can find everything
-RUN setx /M PATH "%PATH%;%ProgramFiles%\\7-Zip;c:\\BuildTools\\python;c:\\BuildTools\\python\\scripts\\"
+# Run some cleanup
+RUN del /f c:\steamcmd\steamcmd.zip && rmdir /S /Q c:\TEMP
 
 # Define the entry point for the docker container.
 # This entry point starts the developer command prompt and launches the PowerShell shell.

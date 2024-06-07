@@ -1,4 +1,6 @@
 .git
 .github
+.gitlab
+
 build.ps1
 LICENSE
