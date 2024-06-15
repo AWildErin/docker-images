@@ -6,6 +6,7 @@ on:
       - ue-win.dockerfile
       - .github/workflows/build-unreal.yml
       - build.ps1
+  workflow_dispatch:
 
 env: 
   USER: ${{ secrets.DOCKER_USER }}

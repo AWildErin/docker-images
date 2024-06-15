@@ -6,6 +6,7 @@ on:
       - docker_windows.dockerfile
       - .github/workflows/build-windows.yml
       - build_docker-windows.ps1
+  workflow_dispatch:
 
 env: 
   USER: ${{ secrets.DOCKER_USER }}
