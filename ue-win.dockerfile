@@ -22,6 +22,7 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --add Microsoft.VisualStudio.Component.VC.CMake.Project `
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 `
+    --add Microsoft.VisualStudio.Component.Windows10SDK.DiagnosticsTools `
     --add Microsoft.Net.Component.4.8.SDK `
     --add Microsoft.Net.Component.4.7.2.TargetingPack `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
