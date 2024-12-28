@@ -22,10 +22,13 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --add Microsoft.VisualStudio.Component.VC.CMake.Project `
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 `
-    --add Microsoft.VisualStudio.Component.Windows10SDK.DiagnosticsTools `
     --add Microsoft.Net.Component.4.8.SDK `
     --add Microsoft.Net.Component.4.7.2.TargetingPack `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
+
+# Install chocolatey and windbg (These are not obtainable using the build tools yet the SDK *is* :/)
+RUN powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:chocolateyVersion = '1.4.0'; Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+RUN choco install -y choco install windows-sdk-10-version-2004-windbg
 
 # Fetch latest python
 ADD https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe C:\TEMP\python_inst.exe
