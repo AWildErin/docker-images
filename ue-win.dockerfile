@@ -5,6 +5,9 @@ FROM mcr.microsoft.com/windows/server:ltsc2022 AS builder
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
 
+# Enable long path support
+RUN reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t REG_DWORD /d 1 /f
+
 # Download the Build Tools bootstrapper.
 ADD https://aka.ms/vs/17/release/vs_buildtools.exe C:\TEMP\vs_buildtools.exe
 
